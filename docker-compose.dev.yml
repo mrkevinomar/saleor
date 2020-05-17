@@ -5,7 +5,7 @@ services:
     ports:
       - 8000:8000
     build:
-      context: ./saleor
+      context: ./
       dockerfile: ./Dockerfile.dev
       args:
         STATIC_URL: '/static/'
@@ -17,9 +17,9 @@ services:
       - db
       - redis
     volumes:
-      - ./saleor/saleor/:/app/saleor:Z
-      - ./saleor/templates/:/app/templates:Z
-      - ./saleor/tests/:/app/tests
+      - ./saleor/:/app/saleor:Z
+      - ./templates/:/app/templates:Z
+      - ./tests/:/app/tests
       # prevents overshadowing of build-time assets
       #- /app/saleor/static/assets
       - ./webpack-bundle.json:/app/webpack-bundle.json:Z
@@ -27,7 +27,7 @@ services:
       # shared volume between worker and api for media
       - saleor-media:/app/media
     command: python manage.py runserver 0.0.0.0:8000
-    env_file: ./saleor/common.dev.env
+    env_file: ./common.dev.env
     environment:
       - STOREFRONT_URL=http://localhost:3000/
       - DASHBOARD_URL=http://localhost:9000/
@@ -59,7 +59,7 @@ services:
 
   worker:
     build:
-      context: ./saleor
+      context: ./
       dockerfile: ./Dockerfile.dev
       args:
         STATIC_URL: '/static/'
@@ -67,12 +67,12 @@ services:
     restart: unless-stopped
     networks:
       - saleor-backend-tier
-    env_file: ./saleor/common.dev.env
+    env_file: ./common.dev.env
     depends_on:
       - redis
     volumes:
-      - ./saleor/saleor/:/app/saleor:Z,cached
-      - ./saleor/templates/:/app/templates:Z,cached
+      - ./saleor/:/app/saleor:Z,cached
+      - ./templates/:/app/templates:Z,cached
       # prevents overshadowing of build-time assets
       - /app/templates/templated_email/compiled
       # shared volume between worker and api for media
